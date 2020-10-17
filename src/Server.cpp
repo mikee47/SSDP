@@ -164,24 +164,25 @@ bool Server::begin(ReceiveDelegate onReceive, SendDelegate onSend)
 		return false;
 	}
 
-	messageQueue.setCallback([this](MessageSpec* ms) {
-		Message msg;
-		if(buildMessage(msg, *ms)) {
-			sendDelegate(msg, *ms);
-		}
-
-		if(ms->repeat > 0) {
-			// Send again
-			--ms->repeat;
-			messageQueue.add(ms, 1000);
-		} else {
-			delete ms;
-		}
-	});
-
 	debug_i("[SSDP] Started");
 	active = true;
 	return true;
+}
+
+void Server::onMessage(MessageSpec* ms)
+{
+	Message msg;
+	if(buildMessage(msg, *ms)) {
+		sendDelegate(msg, *ms);
+	}
+
+	if(ms->repeat > 0) {
+		// Send again
+		--ms->repeat;
+		messageQueue.add(ms, 1000);
+	} else {
+		delete ms;
+	}
 }
 
 void Server::end()

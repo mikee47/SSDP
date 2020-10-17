@@ -24,15 +24,15 @@
 
 namespace SSDP
 {
+using MessageDelegate = Delegate<void(MessageSpec* ms)>;
+
 /**
  * @brief Queue of objects managed by a single timer
  */
 class MessageQueue
 {
 public:
-	using MessageDelegate = Delegate<void(MessageSpec* ms)>;
-
-	MessageQueue();
+	MessageQueue(MessageDelegate delegate);
 
 	~MessageQueue()
 	{
@@ -43,19 +43,35 @@ public:
 
 	unsigned count();
 
+	/**
+	 * @brief Set a callback to be invoked
+	 */
 	void setCallback(MessageDelegate delegate)
 	{
 		this->delegate = delegate;
 	}
 
+	/**
+	 * @brief Schedule a message to start after the given interval has elapsed
+	 * @param ms The template spec. for constructing the message(s)
+	 * @param intervalMs How long to wait before sending
+	 *
+	 * The UPnP spec. requires that messages are sent after random delays, hence the interval.
+	 */
 	void add(MessageSpec* ms, uint32_t intervalMs);
 
+	/**
+	 * @brief Determine if a matching message specification is already queued.
+	 * @param ms
+	 * @retval bool true if the given spec. is already queued.
+	 *
+	 * See `MessageSpec` operator== definition for how comparison is performed.
+	 */
 	bool contains(MessageSpec* ms) const;
 
 private:
 	void setTimer();
 
-private:
 	Timer timer;
 	MessageDelegate delegate;
 	MessageSpec* head = nullptr;

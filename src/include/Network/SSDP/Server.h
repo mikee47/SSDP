@@ -56,6 +56,10 @@ using SendDelegate = Delegate<void(Message& msg, MessageSpec& ms)>;
 class Server : private UdpConnection
 {
 public:
+	Server() : messageQueue(MessageDelegate(&Server::onMessage, this))
+	{
+	}
+
 	/**
 	 * @brief Called from UPnP library
 	 * @note May only be called once
@@ -84,8 +88,8 @@ protected:
 
 private:
 	void onTimer();
+	void onMessage(MessageSpec* ms);
 
-private:
 	ReceiveDelegate receiveDelegate = nullptr;
 	SendDelegate sendDelegate = nullptr;
 	bool active = false;
