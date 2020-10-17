@@ -17,7 +17,7 @@
  *
  ****/
 
-#include "include/SSDP/Message.h"
+#include <Network/SSDP/Message.h>
 #include <Data/CStringArray.h>
 
 namespace SSDP

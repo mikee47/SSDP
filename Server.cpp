@@ -18,7 +18,7 @@
  ****/
 
 #include "debug.h"
-#include "include/SSDP/Server.h"
+#include <Network/SSDP/Server.h>
 #include <lwip/igmp.h>
 #include <SmingVersion.h>
 #include <SystemClock.h>

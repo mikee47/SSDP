@@ -18,7 +18,7 @@
  ****/
 
 #include "debug.h"
-#include "include/SSDP/MessageQueue.h"
+#include <Network/SSDP/MessageQueue.h>
 
 namespace SSDP
 {
