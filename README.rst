@@ -3,7 +3,9 @@ SSDP
 
 .. highlight:: text
 
-`Simple Service Discovery Protocol <https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol>`.
+https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol
+
+Provides an SSDP server implementation aiming to be fully standards compliant.
 
 Configuration Variables
 -----------------------
