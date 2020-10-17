@@ -45,7 +45,7 @@ bool UUID::generate()
 	return SystemClock.isSet();
 }
 
-size_t UUID::toString(char* buffer, size_t bufSize)
+size_t UUID::toString(char* buffer, size_t bufSize) const
 {
 	if(buffer == nullptr || bufSize < stringSize) {
 		return 0;
@@ -77,7 +77,7 @@ size_t UUID::toString(char* buffer, size_t bufSize)
 	return stringSize;
 }
 
-String UUID::toString()
+String UUID::toString() const
 {
 	String s;
 	if(s.setLength(stringSize)) {

@@ -50,10 +50,10 @@ enum SearchMatch {
 	MATCH_TYPE, ///< Matched device or service type
 };
 
-String getNotifySubtypeString(NotifySubtype subtype);
+String toString(NotifySubtype subtype);
 NotifySubtype getNotifySubtype(const char* subtype);
-String getSearchTargetString(SearchTarget target);
-String getSearchMatchString(SearchMatch match);
+String toString(SearchTarget target);
+String toString(SearchMatch match);
 
 /**
  * @brief Defines the information used to create an outgoing message

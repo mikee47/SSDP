@@ -26,7 +26,7 @@ namespace SSDP
 DEFINE_FSTR(fstr_NotifySubtype, SSDP_NOTIFY_SUBTYPE_MAP(XX))
 #undef XX
 
-String getNotifySubtypeString(NotifySubtype subtype)
+String toString(NotifySubtype subtype)
 {
 	return CStringArray(fstr_NotifySubtype)[subtype];
 }
@@ -37,7 +37,7 @@ NotifySubtype getNotifySubtype(const char* subtype)
 	return (n < 0) ? NTS_OTHER : NotifySubtype(n);
 }
 
-String getSearchTargetString(SearchTarget target)
+String toString(SearchTarget target)
 {
 	switch(target) {
 	case TARGET_ROOT:
@@ -53,7 +53,7 @@ String getSearchTargetString(SearchTarget target)
 	}
 }
 
-String getSearchMatchString(SearchMatch match)
+String toString(SearchMatch match)
 {
 	switch(match) {
 	case MATCH_ROOT:

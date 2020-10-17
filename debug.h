@@ -19,8 +19,6 @@
 
 #pragma once
 
-#define SSDP_DEBUG_VERBOSE
-
 #ifdef SSDP_DEBUG_VERBOSE
 #undef DEBUG_VERBOSE_LEVEL
 #define DEBUG_VERBOSE_LEVEL 3

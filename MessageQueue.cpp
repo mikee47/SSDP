@@ -36,7 +36,7 @@ MessageQueue::MessageQueue()
 		head = head->next;
 		ms->next = nullptr;
 
-		debug_d("[SSDP] Timer fired, %s for %p", getMessageTypeString(ms->messageType).c_str(), ms->object);
+		debug_d("[SSDP] Timer fired, %s for %p", toString(ms->messageType).c_str(), ms->object);
 
 		// We're no longer responsible for ms
 		if(delegate) {
@@ -81,10 +81,10 @@ void MessageQueue::add(MessageSpec* ms, uint32_t intervalMs)
 	debug_d("[SSDP] MessageQueue::add(%u)", intervalMs);
 	debug_d("  .object  = %p", ms->object);
 	debug_d("  .remote  = %s:%u", IpAddress(ms->remoteIP).toString().c_str(), ms->remotePort);
-	debug_d("  .message = %s", getMessageTypeString(ms->messageType).c_str());
-	debug_d("  .notify  = %s", getNotifySubtypeString(ms->notifySubtype).c_str());
-	debug_d("  .match   = %s", getSearchMatchString(ms->match).c_str());
-	debug_d("  .target  = %s", getSearchTargetString(ms->target).c_str());
+	debug_d("  .message = %s", toString(ms->messageType).c_str());
+	debug_d("  .notify  = %s", toString(ms->notifySubtype).c_str());
+	debug_d("  .match   = %s", toString(ms->match).c_str());
+	debug_d("  .target  = %s", toString(ms->target).c_str());
 	debug_d("  .repeat  = %u", ms->repeat);
 
 	uint32_t due = Timer::Clock::ticks() + Timer::Millis::timeToTicks(intervalMs);

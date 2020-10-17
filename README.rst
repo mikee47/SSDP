@@ -5,15 +5,24 @@ SSDP
 
 `Simple Service Discovery Protocol <https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol>`.
 
-Key points from UPnP 2.0 specification.
+Configuration Variables
+-----------------------
+
+.. envvar:: SSDP_DEBUG_VERBOSE
+
+   -  0 (default)
+   -  1: Output details of all requests. Warning: This can produce a lot of output!
+
+
+Key points from UPnP 2.0 specification
+--------------------------------------
 
 I'm choosing to avoid the issue of 'multi-homed' devices, where both IPv4 and IPv6
 are being used, and probably also WiFi+Ethernet combinations.
 Basically whenever multiple IP stacks are involved.
 
-
 Advertisement
--------------
+~~~~~~~~~~~~~
 
 Multicast using ``ssdp:alive`` messages.
 
@@ -68,7 +77,7 @@ Note that ``ssdp:update`` messages are only mentioned in the spec. wrt. mult-hom
 
 
 Search request
---------------
+~~~~~~~~~~~~~~
 
 M-SEARCH: "Please tell me about yourselves, but don't all shout at once."
 
@@ -98,7 +107,7 @@ definitions. e.g. ``Basic:1`` not ``Basic:1.0``.
 
 
 Search reponse
---------------
+~~~~~~~~~~~~~~
 
 ::
 
@@ -128,7 +137,7 @@ In response to an M-SEARCH request, if ST header in request was::
 
 
 Descriptions
-------------
+~~~~~~~~~~~~
 
 The ``LOCATION`` field is for the device description *or enclosing device in the case of a service*.
 

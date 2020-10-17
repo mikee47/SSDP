@@ -1,5 +1,7 @@
 /**
- * UUID.h
+ * UUID.h - Universal Unique Identifier
+ *
+ * See https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm.
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -16,10 +18,6 @@
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
-
-/*
- * https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm
- */
 
 #pragma once
 
@@ -55,7 +53,17 @@ struct UUID {
 	 *
 	 * e.g. 2fac1234-31f8-11b4-a222-08002b34c003
 	 */
-	size_t toString(char* buffer, size_t bufSize);
+	size_t toString(char* buffer, size_t bufSize) const;
 
-	String toString();
+	String toString() const;
+
+	operator String() const
+	{
+		return toString();
+	}
 };
+
+inline String toString(const UUID& uuid)
+{
+	return uuid.toString();
+}

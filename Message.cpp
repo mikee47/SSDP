@@ -30,7 +30,7 @@ DEFINE_FSTR(SSDP_ALL, "ssdp:all");
 DEFINE_FSTR_LOCAL(fstr_MessageType, SSDP_MESSAGE_TYPE_MAP(XX));
 #undef XX
 
-String getMessageTypeString(MessageType type)
+String toString(MessageType type)
 {
 	return CStringArray(fstr_MessageType)[type];
 }

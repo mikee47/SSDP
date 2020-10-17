@@ -43,7 +43,7 @@ enum MessageType {
 #undef XX
 };
 
-String getMessageTypeString(MessageType type);
+String toString(MessageType type);
 
 /**
  * @brief class template for messages

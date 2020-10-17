@@ -84,7 +84,7 @@ void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	msg.remoteIP = remoteIP;
 	msg.remotePort = remotePort;
 
-	debug_d("[SSDP] RX %s %s: %u headers", addr.c_str(), getMessageTypeString(msg.type).c_str(), msg.count());
+	debug_d("[SSDP] RX %s %s: %u headers", addr.c_str(), toString(msg.type).c_str(), msg.count());
 
 	receiveDelegate(msg);
 }
@@ -233,7 +233,7 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 		}
 
 		if(msg.type == MESSAGE_NOTIFY) {
-			msg["NTS"] = getNotifySubtypeString(ms.notifySubtype);
+			msg["NTS"] = toString(ms.notifySubtype);
 		}
 
 		if(msg.type == MESSAGE_RESPONSE) {
