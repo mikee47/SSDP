@@ -61,13 +61,21 @@ public:
 	}
 
 	/**
-	 * @brief Called from UPnP library
+	 * @brief Called from UPnP library to start SSDP server
 	 * @note May only be called once
+	 * @retval bool true on success
 	 */
 	bool begin(ReceiveDelegate receiveCallback, SendDelegate sendCallback);
 
+	/**
+	 * @brief Stop SSDP server
+	 */
 	void end();
 
+	/**
+	 * @brief Determine if server is running
+	 * @retval bool
+	 */
 	bool isActive()
 	{
 		return active;
@@ -78,6 +86,12 @@ public:
 	 */
 	bool sendMessage(const Message& msg);
 
+	/**
+	 * @brief Construct a message from the given template spec.
+	 * @param msg Fields of this message will be filled out
+	 * @param ms Spec to use for constructing message
+	 * @retval bool Returns false if validation failed: message should not be sent
+	 */
 	bool buildMessage(Message& msg, MessageSpec& ms);
 
 public:

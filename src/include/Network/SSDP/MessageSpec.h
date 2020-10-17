@@ -1,5 +1,9 @@
 /**
- * MessageSpec.h
+ * MessageSpec.h - Template specification for constructing SSDP message packets
+ *
+ * Rather than manually constructing a message from scratch, the framework uses a template
+ * to define the type of standard message to be sent with various parameters. Callbacks
+ * may be used to customise the message before sending.
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -29,6 +33,9 @@
 
 namespace SSDP
 {
+/**
+ * @brief SSDP Notification subtype
+ */
 enum NotifySubtype {
 #define XX(type, str) NTS_##type,
 	SSDP_NOTIFY_SUBTYPE_MAP(XX)
@@ -36,6 +43,9 @@ enum NotifySubtype {
 		NTS_OTHER
 };
 
+/**
+ * @brief SSDP Search target types
+ */
 enum SearchTarget {
 	TARGET_ROOT, ///< Root devices only: `upnp:rootdevice`
 	TARGET_TYPE, ///< Search for device/service type: `urn:{domain}:device:{deviceType}:{v}`
@@ -44,6 +54,9 @@ enum SearchTarget {
 	TARGET_ALL,  ///< All devices and services: `ssdp::all`
 };
 
+/**
+ * @brief Determines the kind of match obtained when scanning incoming packets
+ */
 enum SearchMatch {
 	MATCH_ROOT, ///< Matched root device
 	MATCH_UUID, ///< Matched with device UUID
@@ -57,6 +70,8 @@ String toString(SearchMatch match);
 
 /**
  * @brief Defines the information used to create an outgoing message
+ *
+ * The message queue stores these objects as a linked list.
  */
 struct MessageSpec {
 	void* object = nullptr; ///< Defined by UPnP or application
@@ -101,9 +116,10 @@ struct MessageSpec {
 	}
 
 private:
+	// These fields are used by the message queue
 	friend class MessageQueue;
-	uint32_t due;
-	MessageSpec* next;
+	uint32_t due;	  ///< Absolute clock tick value when this message should be sent
+	MessageSpec* next; ///< Next message in the list
 };
 
 } // namespace SSDP

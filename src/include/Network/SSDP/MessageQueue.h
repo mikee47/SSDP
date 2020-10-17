@@ -24,6 +24,10 @@
 
 namespace SSDP
 {
+/**
+ * @brief A callback function must be provided to do the actual sending
+ * @param ms Message spec. to action, must delete when finished with it
+ */
 using MessageDelegate = Delegate<void(MessageSpec* ms)>;
 
 /**
@@ -44,7 +48,8 @@ public:
 	unsigned count();
 
 	/**
-	 * @brief Set a callback to be invoked
+	 * @brief Set a callback to handle sending a message
+	 * @Param delegate
 	 */
 	void setCallback(MessageDelegate delegate)
 	{
@@ -57,6 +62,7 @@ public:
 	 * @param intervalMs How long to wait before sending
 	 *
 	 * The UPnP spec. requires that messages are sent after random delays, hence the interval.
+	 * MessagesSpec objects must be created using the `new` allocator and are deleted after sending.
 	 */
 	void add(MessageSpec* ms, uint32_t intervalMs);
 
@@ -67,7 +73,7 @@ public:
 	 *
 	 * See `MessageSpec` operator== definition for how comparison is performed.
 	 */
-	bool contains(MessageSpec* ms) const;
+	bool contains(const MessageSpec& ms) const;
 
 private:
 	void setTimer();
