@@ -17,7 +17,7 @@
  *
  ****/
 
-#include <Network/SSDP/UUID.h>
+#include "include/Network/SSDP/UUID.h"
 #include <string.h>
 #include <Platform/Station.h>
 #include <SystemClock.h>
