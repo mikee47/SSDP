@@ -53,7 +53,7 @@ template <class HeaderClass> class BaseMessage : public HeaderClass
 public:
 	MessageType type = MESSAGE_NOTIFY;
 	IpAddress remoteIP;
-	uint16_t remotePort = 0;
+	uint16_t remotePort{0};
 };
 
 /**

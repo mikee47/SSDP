@@ -80,8 +80,8 @@ private:
 
 	Timer timer;
 	MessageDelegate delegate;
-	MessageSpec* head = nullptr;
-	bool timerSet = false;
+	MessageSpec* head{nullptr};
+	bool timerSet{false};
 };
 
 } // namespace SSDP

@@ -104,9 +104,9 @@ private:
 	void onTimer();
 	void onMessage(MessageSpec* ms);
 
-	ReceiveDelegate receiveDelegate = nullptr;
-	SendDelegate sendDelegate = nullptr;
-	bool active = false;
+	ReceiveDelegate receiveDelegate{nullptr};
+	SendDelegate sendDelegate{nullptr};
+	bool active{false};
 };
 
 extern Server server;

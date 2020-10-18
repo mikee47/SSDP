@@ -74,8 +74,8 @@ String toString(SearchMatch match);
  * The message queue stores these objects as a linked list.
  */
 struct MessageSpec {
-	void* object = nullptr; ///< Defined by UPnP or application
-	ip4_addr_t remoteIP;	///< Where to send message
+	void* object{nullptr}; ///< Defined by UPnP or application
+	ip4_addr_t remoteIP;   ///< Where to send message
 	union {
 		struct {
 			uint32_t remotePort : 16; ///< Port to send message
@@ -85,10 +85,10 @@ struct MessageSpec {
 			SearchTarget target : 2;
 			uint32_t repeat : 4; ///< Number of times to repeat, 0 = send once, 1 = twice, etc.
 		};
-		uint32_t packed = 0;
+		uint32_t packed{0};
 	};
 	// Compare all but the repeat value
-	static constexpr uint32_t packed_mask = 0x03FFFFFF;
+	static constexpr uint32_t packed_mask{0x03FFFFFF};
 
 	MessageSpec(MessageType type)
 	{
