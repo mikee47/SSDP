@@ -19,7 +19,6 @@
 
 #include "debug.h"
 #include "include/Network/SSDP/Server.h"
-#include <lwip/igmp.h>
 #include <SmingVersion.h>
 #include <SystemClock.h>
 #include <Timer.h>
@@ -153,9 +152,8 @@ bool Server::begin(ReceiveDelegate onReceive, SendDelegate onSend)
 	this->receiveDelegate = onReceive;
 	this->sendDelegate = onSend;
 
-	ip_addr_t multicast_addr = {SSDP_MULTICAST_IP};
-	if(igmp_joingroup(IP_ADDR_ANY, &multicast_addr) != ERR_OK) {
-		debug_w("[SSDP] LLMNR igmp_joingroup() failed");
+	if(!joinMulticastGroup(SSDP_MULTICAST_IP)) {
+		debug_w("[SSDP] joinMulticastGroup() failed");
 		return false;
 	}
 
@@ -193,8 +191,7 @@ void Server::end()
 
 	close();
 
-	ip_addr_t multicast_addr = {SSDP_MULTICAST_IP};
-	igmp_leavegroup(IP_ADDR_ANY, &multicast_addr);
+	leaveMulticastGroup(SSDP_MULTICAST_IP);
 
 	active = false;
 }
