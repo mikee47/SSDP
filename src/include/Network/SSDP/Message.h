@@ -37,8 +37,8 @@ DECLARE_FSTR(SSDP_MAN_DISCOVER);
 DECLARE_FSTR(UPNP_ROOTDEVICE);
 DECLARE_FSTR(SSDP_ALL);
 
-enum MessageType {
-#define XX(t) MESSAGE_##t,
+enum class MessageType {
+#define XX(tag) tag,
 	SSDP_MESSAGE_TYPE_MAP(XX)
 #undef XX
 };
@@ -49,7 +49,7 @@ enum MessageType {
 template <class HeaderClass> class BaseMessage : public HeaderClass
 {
 public:
-	MessageType type = MESSAGE_NOTIFY;
+	MessageType type{MessageType::NOTIFY};
 	IpAddress remoteIP;
 	uint16_t remotePort{0};
 };

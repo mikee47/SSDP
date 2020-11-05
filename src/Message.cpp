@@ -18,17 +18,24 @@
  ****/
 
 #include "include/Network/SSDP/Message.h"
-#include <Data/CStringArray.h>
+#include <FlashString/Vector.hpp>
+
+namespace
+{
+#define XX(tag) DEFINE_FSTR_LOCAL(str_msgtype_##tag, #tag)
+SSDP_MESSAGE_TYPE_MAP(XX)
+#undef XX
+
+#define XX(tag) &str_msgtype_##tag,
+DEFINE_FSTR_VECTOR(msgtypeStrings, FlashString, SSDP_MESSAGE_TYPE_MAP(XX))
+#undef XX
+} // namespace
 
 namespace SSDP
 {
 DEFINE_FSTR(SSDP_MAN_DISCOVER, "\"ssdp:discover\"");
 DEFINE_FSTR(UPNP_ROOTDEVICE, "upnp:rootdevice");
 DEFINE_FSTR(SSDP_ALL, "ssdp:all");
-
-#define XX(t) #t "\0"
-DEFINE_FSTR_LOCAL(fstr_MessageType, SSDP_MESSAGE_TYPE_MAP(XX));
-#undef XX
 
 http_errno BasicMessage::parse(char* data, size_t len)
 {
@@ -47,12 +54,12 @@ http_errno BasicMessage::parse(char* data, size_t len)
 				err = HPE_INVALID_HEADER_TOKEN;
 				break;
 			}
-			type = MESSAGE_MSEARCH;
+			type = MessageType::MSEARCH;
 			break;
 		}
 
 		case HTTP_NOTIFY:
-			type = MESSAGE_NOTIFY;
+			type = MessageType::NOTIFY;
 			break;
 
 		default:
@@ -61,7 +68,7 @@ http_errno BasicMessage::parse(char* data, size_t len)
 		break;
 
 	case HTTP_RESPONSE:
-		type = MESSAGE_RESPONSE;
+		type = MessageType::RESPONSE;
 		break;
 
 	default:
@@ -75,5 +82,5 @@ http_errno BasicMessage::parse(char* data, size_t len)
 
 String toString(SSDP::MessageType type)
 {
-	return CStringArray(fstr_MessageType)[type];
+	return msgtypeStrings[unsigned(type)];
 }

@@ -99,17 +99,17 @@ static bool formatMessage(String& data, const Message& msg)
 	DEFINE_FSTR_LOCAL(fstr_HTTP, " * HTTP/1.1\r\n");
 
 	data.reserve(512);
-	if(msg.type == MESSAGE_RESPONSE) {
+	if(msg.type == MessageType::RESPONSE) {
 		data = fstr_RESPONSE;
 	} else {
-		if(msg.type == MESSAGE_NOTIFY) {
+		if(msg.type == MessageType::NOTIFY) {
 			// Check subtype has been set
 			if(!msg.contains("NTS")) {
 				debug_e("[SSDP] NTS field missing");
 				return false;
 			}
 			data = fstr_NOTIFY;
-		} else if(msg.type == MESSAGE_MSEARCH) {
+		} else if(msg.type == MessageType::MSEARCH) {
 			data = fstr_MSEARCH;
 		} else {
 			debug_e("[SSDP] Bad message type");
@@ -174,9 +174,8 @@ void Server::onMessage(MessageSpec* ms)
 		sendDelegate(msg, *ms);
 	}
 
-	if(ms->repeat > 0) {
+	if(ms->shouldRepeat()) {
 		// Send again
-		--ms->repeat;
 		messageQueue.add(ms, 1000);
 	} else {
 		delete ms;
@@ -198,18 +197,18 @@ void Server::end()
 
 bool Server::buildMessage(Message& msg, MessageSpec& ms)
 {
-	msg.type = ms.messageType;
-	if(msg.type == MESSAGE_MSEARCH) {
+	msg.type = ms.type();
+	if(msg.type == MessageType::MSEARCH) {
 		msg["MAN"] = SSDP_MAN_DISCOVER;
 		msg["MX"] = "10";
 		msg.remoteIP = SSDP_MULTICAST_IP;
 		msg.remotePort = SSDP_MULTICAST_PORT;
 
-		switch(ms.target) {
-		case TARGET_ROOT:
+		switch(ms.target()) {
+		case SearchTarget::ROOT:
 			msg["ST"] = UPNP_ROOTDEVICE;
 			break;
-		case TARGET_ALL:
+		case SearchTarget::ALL:
 			msg["ST"] = SSDP_ALL;
 			break;
 		default:
@@ -230,20 +229,20 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 			msg[HTTP_HEADER_DATE] = DateTime(SystemClock.now(eTZ_UTC)).toHTTPDate();
 		}
 
-		if(msg.type == MESSAGE_NOTIFY) {
-			msg["NTS"] = toString(ms.notifySubtype);
+		if(msg.type == MessageType::NOTIFY) {
+			msg["NTS"] = toString(ms.notifySubtype());
 		}
 
-		if(msg.type == MESSAGE_RESPONSE) {
+		if(msg.type == MessageType::RESPONSE) {
 			msg["EXT"] = "";
 		}
 
-		msg.remoteIP = ms.remoteIP;
-		msg.remotePort = ms.remotePort;
+		msg.remoteIP = ms.remoteIp();
+		msg.remotePort = ms.remotePort();
 		msg[HTTP_HEADER_CACHE_CONTROL] = _F("max-age=1800");
 	}
 
-	if(msg.type != MESSAGE_RESPONSE) {
+	if(msg.type != MessageType::RESPONSE) {
 		msg[HTTP_HEADER_HOST] = msg.remoteIP.toString() + ':' + msg.remotePort;
 	}
 	//	msg[HTTP_HEADER_USER_AGENT] = SERVER_ID;
