@@ -37,7 +37,7 @@ DEFINE_FSTR(SSDP_MAN_DISCOVER, "\"ssdp:discover\"");
 DEFINE_FSTR(UPNP_ROOTDEVICE, "upnp:rootdevice");
 DEFINE_FSTR(SSDP_ALL, "ssdp:all");
 
-http_errno BasicMessage::parse(char* data, size_t len)
+HttpError BasicMessage::parse(char* data, size_t len)
 {
 	auto err = BasicHttpHeaders::parse(data, len, HTTP_BOTH);
 	if(err != HPE_OK) {
@@ -47,7 +47,7 @@ http_errno BasicMessage::parse(char* data, size_t len)
 	switch(BasicHttpHeaders::type()) {
 	case HTTP_REQUEST:
 		switch(BasicHttpHeaders::method()) {
-		case HTTP_MSEARCH: {
+		case HttpMethod::MSEARCH: {
 			auto man = operator[]("MAN");
 			if(SSDP_MAN_DISCOVER != man) {
 				debug_e("[SSDP] MAN field wrong (%s)", man ?: "(null)");
@@ -58,7 +58,7 @@ http_errno BasicMessage::parse(char* data, size_t len)
 			break;
 		}
 
-		case HTTP_NOTIFY:
+		case HttpMethod::NOTIFY:
 			type = MessageType::notify;
 			break;
 

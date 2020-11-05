@@ -61,7 +61,7 @@ public:
 class BasicMessage : public BaseMessage<BasicHttpHeaders>
 {
 public:
-	http_errno parse(char* data, size_t len);
+	HttpError parse(char* data, size_t len);
 };
 
 /**

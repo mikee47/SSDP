@@ -74,9 +74,9 @@ void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 #endif
 
 	BasicMessage msg;
-	http_errno err = msg.parse(static_cast<char*>(buf->payload), len);
+	HttpError err = msg.parse(static_cast<char*>(buf->payload), len);
 	if(err != HPE_OK) {
-		debug_e("[SSDP] errno: %u, %s (%u headers)", err, httpGetErrorName(err).c_str(), msg.count());
+		debug_e("[SSDP] errno: %u, %s (%u headers)", err, toString(err).c_str(), msg.count());
 		return;
 	}
 
