@@ -30,11 +30,6 @@ DEFINE_FSTR(SSDP_ALL, "ssdp:all");
 DEFINE_FSTR_LOCAL(fstr_MessageType, SSDP_MESSAGE_TYPE_MAP(XX));
 #undef XX
 
-String toString(MessageType type)
-{
-	return CStringArray(fstr_MessageType)[type];
-}
-
 http_errno BasicMessage::parse(char* data, size_t len)
 {
 	auto err = BasicHttpHeaders::parse(data, len, HTTP_BOTH);
@@ -77,3 +72,8 @@ http_errno BasicMessage::parse(char* data, size_t len)
 }
 
 }; // namespace SSDP
+
+String toString(SSDP::MessageType type)
+{
+	return CStringArray(fstr_MessageType)[type];
+}

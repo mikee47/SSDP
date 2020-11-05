@@ -36,7 +36,7 @@ namespace SSDP
 /**
  * @brief SSDP Notification subtype
  */
-enum NotifySubtype {
+enum class NotifySubtype {
 #define XX(type, str) NTS_##type,
 	SSDP_NOTIFY_SUBTYPE_MAP(XX)
 #undef XX
@@ -46,7 +46,7 @@ enum NotifySubtype {
 /**
  * @brief SSDP Search target types
  */
-enum SearchTarget {
+enum class SearchTarget {
 	TARGET_ROOT, ///< Root devices only: `upnp:rootdevice`
 	TARGET_TYPE, ///< Search for device/service type: `urn:{domain}:device:{deviceType}:{v}`
 	///< or `urn:{domain}:service:{serviceType}:{v}`
@@ -57,16 +57,13 @@ enum SearchTarget {
 /**
  * @brief Determines the kind of match obtained when scanning incoming packets
  */
-enum SearchMatch {
+enum class SearchMatch {
 	MATCH_ROOT, ///< Matched root device
 	MATCH_UUID, ///< Matched with device UUID
 	MATCH_TYPE, ///< Matched device or service type
 };
 
-String toString(NotifySubtype subtype);
 NotifySubtype getNotifySubtype(const char* subtype);
-String toString(SearchTarget target);
-String toString(SearchMatch match);
 
 /**
  * @brief Defines the information used to create an outgoing message
@@ -123,3 +120,7 @@ private:
 };
 
 } // namespace SSDP
+
+String toString(SSDP::NotifySubtype subtype);
+String toString(SSDP::SearchTarget target);
+String toString(SSDP::SearchMatch match);

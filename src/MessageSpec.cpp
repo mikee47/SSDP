@@ -22,14 +22,12 @@
 
 namespace SSDP
 {
+namespace
+{
 #define XX(type, str) str "\0"
 DEFINE_FSTR(fstr_NotifySubtype, SSDP_NOTIFY_SUBTYPE_MAP(XX))
 #undef XX
-
-String toString(NotifySubtype subtype)
-{
-	return CStringArray(fstr_NotifySubtype)[subtype];
-}
+} // namespace
 
 NotifySubtype getNotifySubtype(const char* subtype)
 {
@@ -37,7 +35,14 @@ NotifySubtype getNotifySubtype(const char* subtype)
 	return (n < 0) ? NTS_OTHER : NotifySubtype(n);
 }
 
-String toString(SearchTarget target)
+} // namespace SSDP
+
+String toString(SSDP::NotifySubtype subtype)
+{
+	return CStringArray(fstr_NotifySubtype)[subtype];
+}
+
+String toString(SSDP::SearchTarget target)
 {
 	switch(target) {
 	case TARGET_ROOT:
@@ -53,7 +58,7 @@ String toString(SearchTarget target)
 	}
 }
 
-String toString(SearchMatch match)
+String toString(SSDP::SearchMatch match)
 {
 	switch(match) {
 	case MATCH_ROOT:
@@ -66,5 +71,3 @@ String toString(SearchMatch match)
 		return "UNK";
 	}
 }
-
-}; // namespace SSDP

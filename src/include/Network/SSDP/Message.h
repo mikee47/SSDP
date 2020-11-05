@@ -43,8 +43,6 @@ enum MessageType {
 #undef XX
 };
 
-String toString(MessageType type);
-
 /**
  * @brief class template for messages
  */
@@ -75,3 +73,5 @@ class Message : public BaseMessage<HttpHeaders>
 };
 
 } // namespace SSDP
+
+String toString(SSDP::MessageType type);
