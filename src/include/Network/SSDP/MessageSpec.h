@@ -27,10 +27,10 @@
 #include <IpAddress.h>
 
 #define SSDP_NOTIFY_SUBTYPE_MAP(XX)                                                                                    \
-	XX(ALIVE, "ssdp:alive")                                                                                            \
-	XX(BYEBYE, "ssdp:byebye")                                                                                          \
-	XX(UPDATE, "ssdp:update")                                                                                          \
-	XX(EVENT, "upnp:propchange")
+	XX(alive, "ssdp:alive")                                                                                            \
+	XX(byebye, "ssdp:byebye")                                                                                          \
+	XX(update, "ssdp:update")                                                                                          \
+	XX(event, "upnp:propchange")
 
 namespace SSDP
 {
@@ -48,20 +48,20 @@ enum class NotifySubtype {
  * @brief SSDP Search target types
  */
 enum class SearchTarget {
-	ROOT, ///< Root devices only: `upnp:rootdevice`
-	TYPE, ///< Search for device/service type: `urn:{domain}:device:{deviceType}:{v}`
+	root, ///< Root devices only: `upnp:rootdevice`
+	type, ///< Search for device/service type: `urn:{domain}:device:{deviceType}:{v}`
 	///< or `urn:{domain}:service:{serviceType}:{v}`
-	UUID, ///< Search for specific device: `uuid:{device-UUID}`
-	ALL,  ///< All devices and services: `ssdp::all`
+	uuid, ///< Search for specific device: `uuid:{device-UUID}`
+	all,  ///< All devices and services: `ssdp::all`
 };
 
 /**
  * @brief Determines the kind of match obtained when scanning incoming packets
  */
 enum class SearchMatch {
-	ROOT, ///< Matched root device
-	UUID, ///< Matched with device UUID
-	TYPE, ///< Matched device or service type
+	root, ///< Matched root device
+	uuid, ///< Matched with device UUID
+	type, ///< Matched device or service type
 };
 
 NotifySubtype getNotifySubtype(const char* subtype);
@@ -89,7 +89,7 @@ public:
 	}
 
 	MessageSpec(NotifySubtype nts, SearchTarget target, void* object = nullptr)
-		: MessageSpec(MessageType::NOTIFY, target, object)
+		: MessageSpec(MessageType::notify, target, object)
 	{
 		data.notifySubtype = uint8_t(nts);
 	}

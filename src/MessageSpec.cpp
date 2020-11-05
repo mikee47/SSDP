@@ -29,6 +29,7 @@ SSDP_NOTIFY_SUBTYPE_MAP(XX)
 #define XX(type, str) &str_subtype_##type,
 DEFINE_FSTR_VECTOR(notifySubtypeStrings, FlashString, SSDP_NOTIFY_SUBTYPE_MAP(XX))
 #undef XX
+
 } // namespace
 
 namespace SSDP
@@ -50,13 +51,13 @@ String toString(SSDP::SearchTarget target)
 {
 	using namespace SSDP;
 	switch(target) {
-	case SearchTarget::ROOT:
+	case SearchTarget::root:
 		return "root";
-	case SearchTarget::TYPE:
+	case SearchTarget::type:
 		return "type";
-	case SearchTarget::UUID:
+	case SearchTarget::uuid:
 		return "uuid";
-	case SearchTarget::ALL:
+	case SearchTarget::all:
 		return "all";
 	default:
 		return "UNK";
@@ -67,11 +68,11 @@ String toString(SSDP::SearchMatch match)
 {
 	using namespace SSDP;
 	switch(match) {
-	case SearchMatch::ROOT:
+	case SearchMatch::root:
 		return "root";
-	case SearchMatch::UUID:
+	case SearchMatch::uuid:
 		return "uuid";
-	case SearchMatch::TYPE:
+	case SearchMatch::type:
 		return "type";
 	default:
 		return "UNK";

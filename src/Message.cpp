@@ -54,12 +54,12 @@ http_errno BasicMessage::parse(char* data, size_t len)
 				err = HPE_INVALID_HEADER_TOKEN;
 				break;
 			}
-			type = MessageType::MSEARCH;
+			type = MessageType::msearch;
 			break;
 		}
 
 		case HTTP_NOTIFY:
-			type = MessageType::NOTIFY;
+			type = MessageType::notify;
 			break;
 
 		default:
@@ -68,7 +68,7 @@ http_errno BasicMessage::parse(char* data, size_t len)
 		break;
 
 	case HTTP_RESPONSE:
-		type = MessageType::RESPONSE;
+		type = MessageType::response;
 		break;
 
 	default:

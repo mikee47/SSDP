@@ -99,17 +99,17 @@ static bool formatMessage(String& data, const Message& msg)
 	DEFINE_FSTR_LOCAL(fstr_HTTP, " * HTTP/1.1\r\n");
 
 	data.reserve(512);
-	if(msg.type == MessageType::RESPONSE) {
+	if(msg.type == MessageType::response) {
 		data = fstr_RESPONSE;
 	} else {
-		if(msg.type == MessageType::NOTIFY) {
+		if(msg.type == MessageType::notify) {
 			// Check subtype has been set
 			if(!msg.contains("NTS")) {
 				debug_e("[SSDP] NTS field missing");
 				return false;
 			}
 			data = fstr_NOTIFY;
-		} else if(msg.type == MessageType::MSEARCH) {
+		} else if(msg.type == MessageType::msearch) {
 			data = fstr_MSEARCH;
 		} else {
 			debug_e("[SSDP] Bad message type");
@@ -198,17 +198,17 @@ void Server::end()
 bool Server::buildMessage(Message& msg, MessageSpec& ms)
 {
 	msg.type = ms.type();
-	if(msg.type == MessageType::MSEARCH) {
+	if(msg.type == MessageType::msearch) {
 		msg["MAN"] = SSDP_MAN_DISCOVER;
 		msg["MX"] = "10";
 		msg.remoteIP = SSDP_MULTICAST_IP;
 		msg.remotePort = SSDP_MULTICAST_PORT;
 
 		switch(ms.target()) {
-		case SearchTarget::ROOT:
+		case SearchTarget::root:
 			msg["ST"] = UPNP_ROOTDEVICE;
 			break;
-		case SearchTarget::ALL:
+		case SearchTarget::all:
 			msg["ST"] = SSDP_ALL;
 			break;
 		default:
@@ -229,11 +229,11 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 			msg[HTTP_HEADER_DATE] = DateTime(SystemClock.now(eTZ_UTC)).toHTTPDate();
 		}
 
-		if(msg.type == MessageType::NOTIFY) {
+		if(msg.type == MessageType::notify) {
 			msg["NTS"] = toString(ms.notifySubtype());
 		}
 
-		if(msg.type == MessageType::RESPONSE) {
+		if(msg.type == MessageType::response) {
 			msg["EXT"] = "";
 		}
 
@@ -242,7 +242,7 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 		msg[HTTP_HEADER_CACHE_CONTROL] = _F("max-age=1800");
 	}
 
-	if(msg.type != MessageType::RESPONSE) {
+	if(msg.type != MessageType::response) {
 		msg[HTTP_HEADER_HOST] = msg.remoteIP.toString() + ':' + msg.remotePort;
 	}
 	//	msg[HTTP_HEADER_USER_AGENT] = SERVER_ID;

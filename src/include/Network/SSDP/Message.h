@@ -27,9 +27,9 @@
 static constexpr uint16_t SSDP_MULTICAST_PORT = 1900;
 
 #define SSDP_MESSAGE_TYPE_MAP(XX)                                                                                      \
-	XX(NOTIFY)                                                                                                         \
-	XX(MSEARCH)                                                                                                        \
-	XX(RESPONSE)
+	XX(notify)                                                                                                         \
+	XX(msearch)                                                                                                        \
+	XX(response)
 
 namespace SSDP
 {
@@ -49,7 +49,7 @@ enum class MessageType {
 template <class HeaderClass> class BaseMessage : public HeaderClass
 {
 public:
-	MessageType type{MessageType::NOTIFY};
+	MessageType type{MessageType::notify};
 	IpAddress remoteIP;
 	uint16_t remotePort{0};
 };
