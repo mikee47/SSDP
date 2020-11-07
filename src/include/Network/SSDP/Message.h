@@ -27,9 +27,9 @@
 static constexpr uint16_t SSDP_MULTICAST_PORT = 1900;
 
 #define SSDP_MESSAGE_TYPE_MAP(XX)                                                                                      \
-	XX(NOTIFY)                                                                                                         \
-	XX(MSEARCH)                                                                                                        \
-	XX(RESPONSE)
+	XX(notify)                                                                                                         \
+	XX(msearch)                                                                                                        \
+	XX(response)
 
 namespace SSDP
 {
@@ -37,13 +37,11 @@ DECLARE_FSTR(SSDP_MAN_DISCOVER);
 DECLARE_FSTR(UPNP_ROOTDEVICE);
 DECLARE_FSTR(SSDP_ALL);
 
-enum MessageType {
-#define XX(t) MESSAGE_##t,
+enum class MessageType {
+#define XX(tag) tag,
 	SSDP_MESSAGE_TYPE_MAP(XX)
 #undef XX
 };
-
-String toString(MessageType type);
 
 /**
  * @brief class template for messages
@@ -51,7 +49,7 @@ String toString(MessageType type);
 template <class HeaderClass> class BaseMessage : public HeaderClass
 {
 public:
-	MessageType type = MESSAGE_NOTIFY;
+	MessageType type{MessageType::notify};
 	IpAddress remoteIP;
 	uint16_t remotePort{0};
 };
@@ -63,7 +61,7 @@ public:
 class BasicMessage : public BaseMessage<BasicHttpHeaders>
 {
 public:
-	http_errno parse(char* data, size_t len);
+	HttpError parse(char* data, size_t len);
 };
 
 /**
@@ -75,3 +73,5 @@ class Message : public BaseMessage<HttpHeaders>
 };
 
 } // namespace SSDP
+
+String toString(SSDP::MessageType type);

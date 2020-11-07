@@ -18,7 +18,18 @@
  ****/
 
 #include "include/Network/SSDP/Message.h"
-#include <Data/CStringArray.h>
+#include <FlashString/Vector.hpp>
+
+namespace
+{
+#define XX(tag) DEFINE_FSTR_LOCAL(str_msgtype_##tag, #tag)
+SSDP_MESSAGE_TYPE_MAP(XX)
+#undef XX
+
+#define XX(tag) &str_msgtype_##tag,
+DEFINE_FSTR_VECTOR(msgtypeStrings, FlashString, SSDP_MESSAGE_TYPE_MAP(XX))
+#undef XX
+} // namespace
 
 namespace SSDP
 {
@@ -26,16 +37,7 @@ DEFINE_FSTR(SSDP_MAN_DISCOVER, "\"ssdp:discover\"");
 DEFINE_FSTR(UPNP_ROOTDEVICE, "upnp:rootdevice");
 DEFINE_FSTR(SSDP_ALL, "ssdp:all");
 
-#define XX(t) #t "\0"
-DEFINE_FSTR_LOCAL(fstr_MessageType, SSDP_MESSAGE_TYPE_MAP(XX));
-#undef XX
-
-String toString(MessageType type)
-{
-	return CStringArray(fstr_MessageType)[type];
-}
-
-http_errno BasicMessage::parse(char* data, size_t len)
+HttpError BasicMessage::parse(char* data, size_t len)
 {
 	auto err = BasicHttpHeaders::parse(data, len, HTTP_BOTH);
 	if(err != HPE_OK) {
@@ -45,19 +47,19 @@ http_errno BasicMessage::parse(char* data, size_t len)
 	switch(BasicHttpHeaders::type()) {
 	case HTTP_REQUEST:
 		switch(BasicHttpHeaders::method()) {
-		case HTTP_MSEARCH: {
+		case HttpMethod::MSEARCH: {
 			auto man = operator[]("MAN");
 			if(SSDP_MAN_DISCOVER != man) {
 				debug_e("[SSDP] MAN field wrong (%s)", man ?: "(null)");
 				err = HPE_INVALID_HEADER_TOKEN;
 				break;
 			}
-			type = MESSAGE_MSEARCH;
+			type = MessageType::msearch;
 			break;
 		}
 
-		case HTTP_NOTIFY:
-			type = MESSAGE_NOTIFY;
+		case HttpMethod::NOTIFY:
+			type = MessageType::notify;
 			break;
 
 		default:
@@ -66,7 +68,7 @@ http_errno BasicMessage::parse(char* data, size_t len)
 		break;
 
 	case HTTP_RESPONSE:
-		type = MESSAGE_RESPONSE;
+		type = MessageType::response;
 		break;
 
 	default:
@@ -77,3 +79,8 @@ http_errno BasicMessage::parse(char* data, size_t len)
 }
 
 }; // namespace SSDP
+
+String toString(SSDP::MessageType type)
+{
+	return msgtypeStrings[unsigned(type)];
+}

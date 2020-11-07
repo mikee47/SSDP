@@ -18,53 +18,63 @@
  ****/
 
 #include "include/Network/SSDP/MessageSpec.h"
-#include <Data/CStringArray.h>
+#include <FlashString/Vector.hpp>
+
+namespace
+{
+#define XX(type, str) DEFINE_FSTR_LOCAL(str_subtype_##type, str)
+SSDP_NOTIFY_SUBTYPE_MAP(XX)
+#undef XX
+
+#define XX(type, str) &str_subtype_##type,
+DEFINE_FSTR_VECTOR(notifySubtypeStrings, FlashString, SSDP_NOTIFY_SUBTYPE_MAP(XX))
+#undef XX
+
+} // namespace
 
 namespace SSDP
 {
-#define XX(type, str) str "\0"
-DEFINE_FSTR(fstr_NotifySubtype, SSDP_NOTIFY_SUBTYPE_MAP(XX))
-#undef XX
-
-String toString(NotifySubtype subtype)
-{
-	return CStringArray(fstr_NotifySubtype)[subtype];
-}
-
 NotifySubtype getNotifySubtype(const char* subtype)
 {
-	int n = CStringArray(fstr_NotifySubtype).indexOf(subtype);
-	return (n < 0) ? NTS_OTHER : NotifySubtype(n);
+	int n = notifySubtypeStrings.indexOf(subtype);
+	return (n < 0) ? NotifySubtype::OTHER : NotifySubtype(n);
 }
 
-String toString(SearchTarget target)
+} // namespace SSDP
+
+String toString(SSDP::NotifySubtype subtype)
 {
+	return notifySubtypeStrings[unsigned(subtype)];
+}
+
+String toString(SSDP::SearchTarget target)
+{
+	using namespace SSDP;
 	switch(target) {
-	case TARGET_ROOT:
+	case SearchTarget::root:
 		return "root";
-	case TARGET_TYPE:
+	case SearchTarget::type:
 		return "type";
-	case TARGET_UUID:
+	case SearchTarget::uuid:
 		return "uuid";
-	case TARGET_ALL:
+	case SearchTarget::all:
 		return "all";
 	default:
 		return "UNK";
 	}
 }
 
-String toString(SearchMatch match)
+String toString(SSDP::SearchMatch match)
 {
+	using namespace SSDP;
 	switch(match) {
-	case MATCH_ROOT:
+	case SearchMatch::root:
 		return "root";
-	case MATCH_UUID:
+	case SearchMatch::uuid:
 		return "uuid";
-	case MATCH_TYPE:
+	case SearchMatch::type:
 		return "type";
 	default:
 		return "UNK";
 	}
 }
-
-}; // namespace SSDP
