@@ -22,6 +22,8 @@
 #include <Network/UdpConnection.h>
 #include "MessageQueue.h"
 
+#define UPNP_VERSION_IS(ver) (F(MACROQUOT(ver)) == MACROQUOT(UPNP_VERSION))
+
 namespace SSDP
 {
 DECLARE_FSTR(SERVER_ID);

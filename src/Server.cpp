@@ -26,7 +26,9 @@
 
 namespace SSDP
 {
-DEFINE_FSTR(SERVER_ID, "Sming/" SMING_VERSION " UPnP/1.0");
+#define PRODUCT_NAME "SSDP"
+#define PRODUCT_VERSION "1.0"
+DEFINE_FSTR(SERVER_ID, "Sming/" SMING_VERSION " UPnP/" MACROQUOT(UPNP_VERSION) " " PRODUCT_NAME " " PRODUCT_VERSION);
 
 Server server;
 
@@ -263,15 +265,17 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 	if(msg.type != MessageType::response) {
 		msg[HTTP_HEADER_HOST] = msg.remoteIP.toString() + ':' + msg.remotePort;
 	}
-	//	msg[HTTP_HEADER_USER_AGENT] = SERVER_ID;
 
-	// Recommended as this isn't a chunked message
-	msg[HTTP_HEADER_CONTENT_LENGTH] = "0";
+	// Note: Don't add content-length as it's not in the spec.
+	//	msg[HTTP_HEADER_CONTENT_LENGTH] = "0";
 
-	// UPnP 2.0
-	//	response["BOOTID.UPNP.ORG"] = bootId;
-	//	response["CONFIGID.UPNP.ORG"] = configId;
-	//	response["SEARCHPORT.UPNP.ORG"] = ...
+	if(UPNP_VERSION_IS("1.0")) {
+		msg[HTTP_HEADER_USER_AGENT] = SERVER_ID;
+
+		//	response["BOOTID.UPNP.ORG"] = bootId;
+		//	response["CONFIGID.UPNP.ORG"] = configId;
+		//	response["SEARCHPORT.UPNP.ORG"] = ...
+	}
 
 	// These fields only required for IPv6
 	//	response["01-NLS"] = bootId;
