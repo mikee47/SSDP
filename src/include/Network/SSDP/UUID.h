@@ -24,22 +24,59 @@
 #include <WString.h>
 
 struct UUID {
-	uint32_t time_low;				   // 0-3
-	uint16_t time_mid;				   // 4-5
-	uint16_t time_hi_and_version;	  // 6-7, version = top 4 bits
-	uint8_t clock_seq_hi_and_reserved; // 8, variant = top 2 bits
-	uint8_t clock_seq_low;			   // 9
-	uint8_t node[6];				   // 10-15
+	uint32_t time_low{0};				  // 0-3
+	uint16_t time_mid{0};				  // 4-5
+	uint16_t time_hi_and_version{0};	  // 6-7, version = top 4 bits
+	uint8_t clock_seq_hi_and_reserved{0}; // 8, variant = top 2 bits
+	uint8_t clock_seq_low{0};			  // 9
+	uint8_t node[6]{};					  // 10-15
 
 	/**
 	 * @brief Number of characters in a UUID string (excluding NUL terminator)
 	 */
 	static constexpr size_t stringSize = 36;
 
+	UUID()
+	{
+	}
+
+	UUID(const char* s)
+	{
+		decompose(s);
+	}
+
+	UUID(const char* s, size_t len)
+	{
+		decompose(s, len);
+	}
+
+	UUID(const String& s)
+	{
+		decompose(s.c_str(), s.length());
+	}
+
+	explicit operator bool()
+	{
+		UUID Null{};
+		return memcmp(this, &Null, sizeof(Null)) != 0;
+	}
+
 	/**
 	 * @note System clock must be set or this will not produce correct results.
 	 */
 	bool generate();
+
+	bool decompose(const char* s, size_t len);
+
+	bool decompose(const char* s)
+	{
+		return s ? decompose(s, strlen(s)) : false;
+	}
+
+	bool decompose(const String& s)
+	{
+		return decompose(s.c_str(), s.length());
+	}
 
 	/**
 	 * @note Get string representation of UUID
@@ -66,4 +103,14 @@ struct UUID {
 inline String toString(const UUID& uuid)
 {
 	return uuid.toString();
+}
+
+inline bool fromString(const char* s, UUID& uuid)
+{
+	return uuid.decompose(s);
+}
+
+inline bool fromString(const String& s, UUID& uuid)
+{
+	return uuid.decompose(s);
 }

@@ -18,7 +18,7 @@
  ****/
 
 #include "include/Network/SSDP/UUID.h"
-#include <string.h>
+#include <cstring>
 #include <Platform/Station.h>
 #include <SystemClock.h>
 
@@ -43,6 +43,48 @@ bool UUID::generate()
 	mac.getOctets(node);
 
 	return SystemClock.isSet();
+}
+
+bool UUID::decompose(const char* s, size_t len)
+{
+	if(len != stringSize) {
+		return false;
+	}
+
+	char* p;
+	time_low = strtoul(s, &p, 16);
+	if(*p != '-' || p - s != 8) {
+		return false;
+	}
+	s = ++p;
+
+	time_mid = strtoul(s, &p, 16);
+	if(*p != '-' || p - s != 4) {
+		return false;
+	}
+	s = ++p;
+
+	time_hi_and_version = strtoul(s, &p, 16);
+	if(*p != '-' || p - s != 4) {
+		return false;
+	}
+	s = ++p;
+
+	uint16_t x = strtoul(s, &p, 16);
+	if(*p != '-' || p - s != 4) {
+		return false;
+	}
+	clock_seq_hi_and_reserved = x >> 8;
+	clock_seq_low = x & 0xff;
+	s = ++p;
+
+	for(unsigned i = 0; i < sizeof(node); ++i) {
+		uint8_t c = unhex(*s++) << 4;
+		c |= unhex(*s++);
+		node[i] = c;
+	}
+
+	return true;
 }
 
 size_t UUID::toString(char* buffer, size_t bufSize) const
