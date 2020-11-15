@@ -161,7 +161,13 @@ bool Server::sendMessage(const Message& msg)
 
 bool Server::begin(ReceiveDelegate onReceive, SendDelegate onSend)
 {
-	if(!onReceive || !onSend || active) {
+	if(active) {
+		debug_w("[SSDP] already started");
+		return false;
+	}
+
+	if(!onReceive || !onSend) {
+		debug_e("[SSDP] requires callbacks");
 		return false;
 	}
 
