@@ -33,7 +33,7 @@ DEFINE_FSTR_VECTOR(msgtypeStrings, FlashString, SSDP_MESSAGE_TYPE_MAP(XX))
 
 namespace SSDP
 {
-DEFINE_FSTR(SSDP_MAN_DISCOVER, "\"ssdp:discover\"");
+DEFINE_FSTR(SSDP_DISCOVER, "\"ssdp:discover\"");
 DEFINE_FSTR(UPNP_ROOTDEVICE, "upnp:rootdevice");
 DEFINE_FSTR(SSDP_ALL, "ssdp:all");
 
@@ -49,7 +49,7 @@ HttpError BasicMessage::parse(char* data, size_t len)
 		switch(BasicHttpHeaders::method()) {
 		case HttpMethod::MSEARCH: {
 			auto man = operator[]("MAN");
-			if(SSDP_MAN_DISCOVER != man) {
+			if(SSDP_DISCOVER != man) {
 				debug_e("[SSDP] MAN field wrong (%s)", man ?: "(null)");
 				err = HPE_INVALID_HEADER_TOKEN;
 				break;

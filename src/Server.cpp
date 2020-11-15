@@ -176,15 +176,20 @@ bool Server::begin(ReceiveDelegate onReceive, SendDelegate onSend)
 	this->receiveDelegate = onReceive;
 	this->sendDelegate = onSend;
 
-	if(!joinMulticastGroup(SSDP_MULTICAST_IP)) {
+	auto localIp = WifiStation.getIP();
+
+	if(!joinMulticastGroup(localIp, multicastIp)) {
 		debug_w("[SSDP] joinMulticastGroup() failed");
 		return false;
 	}
 
-	if(!listen(SSDP_MULTICAST_PORT)) {
+	if(!listen(multicastPort)) {
 		debug_e("[SSDP] listen failed");
 		return false;
 	}
+
+	setMulticast(localIp);
+	setMulticastTtl(multicastTtl);
 
 	debug_i("[SSDP] Started");
 	active = true;
@@ -214,7 +219,7 @@ void Server::end()
 
 	close();
 
-	leaveMulticastGroup(SSDP_MULTICAST_IP);
+	leaveMulticastGroup(multicastIp);
 
 	active = false;
 }
@@ -224,10 +229,10 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 	msg.type = ms.type();
 
 	if(msg.type == MessageType::msearch) {
-		msg["MAN"] = SSDP_MAN_DISCOVER;
+		msg["MAN"] = SSDP_DISCOVER;
 		msg["MX"] = "3";
-		msg.remoteIP = SSDP_MULTICAST_IP;
-		msg.remotePort = SSDP_MULTICAST_PORT;
+		msg.remoteIP = multicastIp;
+		msg.remotePort = multicastPort;
 
 		switch(ms.target()) {
 		case SearchTarget::root:

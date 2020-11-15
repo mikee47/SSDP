@@ -221,7 +221,7 @@ public:
 
 private:
 	void* m_object{nullptr}; ///< Defined by UPnP or application
-	ip4_addr_t m_remoteIp;   ///< Where to send message
+	ip4_addr_t m_remoteIp{}; ///< Where to send message
 	union Data {
 		struct {
 			uint32_t remotePort : 16;   ///< Port to send message

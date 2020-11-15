@@ -58,6 +58,8 @@ using SendDelegate = Delegate<void(Message& msg, MessageSpec& ms)>;
 class Server : private UdpConnection
 {
 public:
+	static constexpr uint8_t multicastTtl{2};
+
 	Server() : messageQueue(MessageDelegate(&Server::onMessage, this))
 	{
 	}
