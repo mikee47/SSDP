@@ -220,9 +220,10 @@ void Server::end()
 bool Server::buildMessage(Message& msg, MessageSpec& ms)
 {
 	msg.type = ms.type();
+
 	if(msg.type == MessageType::msearch) {
 		msg["MAN"] = SSDP_MAN_DISCOVER;
-		msg["MX"] = "10";
+		msg["MX"] = "3";
 		msg.remoteIP = SSDP_MULTICAST_IP;
 		msg.remotePort = SSDP_MULTICAST_PORT;
 
@@ -233,16 +234,11 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 		case SearchTarget::all:
 			msg["ST"] = SSDP_ALL;
 			break;
+		case SearchTarget::type:
+		case SearchTarget::uuid:
+			// This will be filled in by ControlPoint
+			break;
 		default:
-			/*
-			 * TODO: This is all Control Point stuff.
-			 *
-			 * When that's implemented we'll have ControlPoint objects
-			 * which will provide specific search target classes.
-			 *
-			 * For now though, we can issue general searches.
-			 *
-			 */
 			debug_e("[SSDP] Invalid M-SEARCH target");
 			return false;
 		}
