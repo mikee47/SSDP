@@ -30,6 +30,11 @@ DEFINE_FSTR(SERVER_ID, "Sming/" SMING_VERSION " UPnP/1.0");
 
 Server server;
 
+void Server::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
+{
+	server.onReceive(buf, remoteIP, remotePort);
+}
+
 void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
 	// Block access from remote networks, or if connected via AP
@@ -136,11 +141,22 @@ static bool formatMessage(String& data, const Message& msg)
 bool Server::sendMessage(const Message& msg)
 {
 	String data;
-	if(formatMessage(data, msg)) {
-		return sendStringTo(msg.remoteIP, msg.remotePort, data);
-	} else {
+	if(!formatMessage(data, msg)) {
 		return false;
 	}
+
+	/*
+	 * If we don't do this, UDP goes pop with "udp_sendto: invalid pcb". Not entirely sure why
+	 * but perhaps we need to bind to a new connection for each message...
+	 */
+	out.listen(0);
+
+	if(!out.sendStringTo(msg.remoteIP, msg.remotePort, data)) {
+		debug_e("[SSDP] sendStringTo (%s:%u) failed", toString(msg.remoteIP).c_str(), msg.remotePort);
+		return false;
+	}
+
+	return true;
 }
 
 bool Server::begin(ReceiveDelegate onReceive, SendDelegate onSend)
