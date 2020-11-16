@@ -1,5 +1,5 @@
 /**
- * UUID.cpp
+ * Uuid.cpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -17,12 +17,12 @@
  *
  ****/
 
-#include "include/Network/SSDP/UUID.h"
+#include "include/Network/SSDP/Uuid.h"
 #include <cstring>
 #include <Platform/Station.h>
 #include <SystemClock.h>
 
-bool UUID::generate()
+bool Uuid::generate()
 {
 	auto mac = WifiStation.getMacAddress();
 	uint8_t version = 1; // DCE version
@@ -45,7 +45,7 @@ bool UUID::generate()
 	return SystemClock.isSet();
 }
 
-bool UUID::decompose(const char* s, size_t len)
+bool Uuid::decompose(const char* s, size_t len)
 {
 	if(len != stringSize) {
 		return false;
@@ -87,7 +87,7 @@ bool UUID::decompose(const char* s, size_t len)
 	return true;
 }
 
-size_t UUID::toString(char* buffer, size_t bufSize) const
+size_t Uuid::toString(char* buffer, size_t bufSize) const
 {
 	if(buffer == nullptr || bufSize < stringSize) {
 		return 0;
@@ -106,8 +106,8 @@ size_t UUID::toString(char* buffer, size_t bufSize) const
 	buffer[13] = '-';
 	set(14, time_hi_and_version, 4);
 	buffer[18] = '-';
-	set(19, clock_seq_hi_and_reserved, 1);
-	set(21, clock_seq_low, 1);
+	set(19, clock_seq_hi_and_reserved, 2);
+	set(21, clock_seq_low, 2);
 	buffer[23] = '-';
 
 	unsigned pos = 24;
@@ -119,7 +119,7 @@ size_t UUID::toString(char* buffer, size_t bufSize) const
 	return stringSize;
 }
 
-String UUID::toString() const
+String Uuid::toString() const
 {
 	String s;
 	if(s.setLength(stringSize)) {

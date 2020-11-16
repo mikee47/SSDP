@@ -1,5 +1,5 @@
 /**
- * UUID.h - Universal Unique Identifier
+ * Uuid.h - Universal Unique Identifier
  *
  * See https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm.
  *
@@ -23,7 +23,7 @@
 
 #include <WString.h>
 
-struct UUID {
+struct Uuid {
 	uint32_t time_low{0};				  // 0-3
 	uint16_t time_mid{0};				  // 4-5
 	uint16_t time_hi_and_version{0};	  // 6-7, version = top 4 bits
@@ -36,28 +36,28 @@ struct UUID {
 	 */
 	static constexpr size_t stringSize = 36;
 
-	UUID()
+	Uuid()
 	{
 	}
 
-	UUID(const char* s)
+	explicit Uuid(const char* s)
 	{
 		decompose(s);
 	}
 
-	UUID(const char* s, size_t len)
+	explicit Uuid(const char* s, size_t len)
 	{
 		decompose(s, len);
 	}
 
-	UUID(const String& s)
+	explicit Uuid(const String& s)
 	{
 		decompose(s.c_str(), s.length());
 	}
 
 	explicit operator bool()
 	{
-		UUID Null{};
+		Uuid Null{};
 		return memcmp(this, &Null, sizeof(Null)) != 0;
 	}
 
@@ -100,17 +100,22 @@ struct UUID {
 	}
 };
 
-inline String toString(const UUID& uuid)
+inline String toString(const Uuid& uuid)
 {
 	return uuid.toString();
 }
 
-inline bool fromString(const char* s, UUID& uuid)
+inline bool fromString(const char* s, Uuid& uuid)
 {
 	return uuid.decompose(s);
 }
 
-inline bool fromString(const String& s, UUID& uuid)
+inline bool fromString(const String& s, Uuid& uuid)
 {
 	return uuid.decompose(s);
 }
+
+/**
+ * @deprecated Use `Uuid` instead.
+ */
+typedef Uuid UUID SMING_DEPRECATED;
