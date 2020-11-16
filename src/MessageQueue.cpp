@@ -112,6 +112,7 @@ void MessageQueue::add(MessageSpec* ms, uint32_t intervalMs)
 void MessageQueue::setTimer()
 {
 	if(head == nullptr) {
+		timer.stop();
 		return;
 	}
 
@@ -137,6 +138,33 @@ bool MessageQueue::contains(const MessageSpec& ms) const
 	}
 
 	return false;
+}
+
+unsigned MessageQueue::remove(void* object)
+{
+	unsigned count{0};
+	MessageSpec* prev = nullptr;
+	auto p = head;
+	while(p != nullptr) {
+		auto next = p->next;
+		if(p->object<void>() == object) {
+			if(p == head) {
+				head = next;
+			} else {
+				prev->next = next;
+			}
+			delete p;
+			++count;
+		} else {
+			prev = p;
+		}
+		p = next;
+	}
+
+	if(count != 0) {
+		setTimer();
+	}
+	return count;
 }
 
 } // namespace SSDP

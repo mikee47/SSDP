@@ -75,6 +75,12 @@ public:
 	 */
 	bool contains(const MessageSpec& ms) const;
 
+	/**
+	 * @brief Remove any messages for this object
+	 * @retval unsigned Number of messages removed
+	 */
+	unsigned remove(void* object);
+
 private:
 	void setTimer();
 
