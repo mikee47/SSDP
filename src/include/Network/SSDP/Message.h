@@ -70,6 +70,10 @@ public:
  */
 class Message : public BaseMessage<HttpHeaders>
 {
+public:
+	Message() = default;
+	Message(const Message&) = default;
+	Message(const BasicMessage& msg);
 };
 
 } // namespace SSDP

@@ -37,6 +37,20 @@ DEFINE_FSTR(SSDP_DISCOVER, "\"ssdp:discover\"");
 DEFINE_FSTR(UPNP_ROOTDEVICE, "upnp:rootdevice");
 DEFINE_FSTR(SSDP_ALL, "ssdp:all");
 
+Message::Message(const BasicMessage& msg)
+{
+	clear();
+
+	type = msg.type;
+	remoteIP = msg.remoteIP;
+	remotePort = msg.remotePort;
+
+	for(unsigned i = 0; i < msg.count(); ++i) {
+		auto& header = msg[i];
+		operator[](header.name) = header.value;
+	}
+}
+
 HttpError BasicMessage::parse(char* data, size_t len)
 {
 	auto err = BasicHttpHeaders::parse(data, len, HTTP_BOTH);
