@@ -3,7 +3,7 @@
  *
  * Copyright 2020 mikee47 <mike@sillyhouse.net>
  *
- * This file is part of the Sming UPnP Library
+ * This file is part of the Sming SSDP Library
  *
  * This library is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, version 3 or later.
@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Sming UPnP.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
@@ -32,10 +32,10 @@
 	XX(service, "urn:{domain}:service:{serviceType}:{version}"                                                         \
 				"uuid:{uuid}::urn:{domain}:service:{serviceType}:{version}")
 
-namespace UPnP
-{
 /**
  * @brief Structure for UPnP URNs
+ * @note UUID format is not specified for UPnP 1.0, but for later revisions MUST be a standard type
+ * as managed by the `SSDP::Uuid` class.
  */
 class Urn
 {
@@ -131,6 +131,8 @@ public:
 		return kind != Kind::none;
 	}
 
+	bool operator==(const Urn& other) const;
+
 	Kind kind{};
 	String uuid;
 	String domain;		///< e.g. PnP::schemas_upnp_org
@@ -193,21 +195,19 @@ public:
 
 using Usn = Urn;
 
-} // namespace UPnP
+String toString(Urn::Kind kind);
 
-String toString(UPnP::Urn::Kind kind);
-
-inline String toString(const UPnP::Urn& urn)
+inline String toString(const Urn& urn)
 {
 	return urn.toString();
 }
 
-inline bool fromString(const char* s, UPnP::Urn& urn)
+inline bool fromString(const char* s, Urn& urn)
 {
 	return urn.decompose(s);
 }
 
-inline bool fromString(const String& s, UPnP::Urn& urn)
+inline bool fromString(const String& s, Urn& urn)
 {
 	return fromString(s.c_str(), urn);
 }

@@ -12,15 +12,13 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Sming UPnP.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
 
 #include "include/Network/SSDP/Urn.h"
 
-namespace UPnP
-{
 /*
  *
  *	none		invalid
@@ -140,11 +138,8 @@ String Urn::toString() const
 	return s;
 }
 
-} // namespace UPnP
-
-String toString(UPnP::Urn::Kind kind)
+String toString(Urn::Kind kind)
 {
-	using namespace UPnP;
 	switch(kind) {
 #define XX(tag, comment)                                                                                               \
 	case Urn::Kind::tag:                                                                                               \
@@ -153,5 +148,25 @@ String toString(UPnP::Urn::Kind kind)
 #undef XX
 	default:
 		return nullptr;
+	}
+}
+
+bool Urn::operator==(const Urn& other) const
+{
+	if(kind != other.kind) {
+		return false;
+	}
+
+	switch(kind) {
+	case Kind::none:
+	case Kind::root:
+		return true;
+	case Kind::uuid:
+		return uuid == other.uuid;
+	case Kind::device:
+	case Kind::service:
+		return version == other.version && domain == other.domain && type == other.type && uuid == other.uuid;
+	default:
+		return false;
 	}
 }
