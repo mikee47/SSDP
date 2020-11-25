@@ -133,6 +133,11 @@ public:
 
 	bool operator==(const Urn& other) const;
 
+	bool operator==(const String& urn) const
+	{
+		return urn == toString();
+	}
+
 	Kind kind{};
 	String uuid;
 	String domain;		///< e.g. PnP::schemas_upnp_org
