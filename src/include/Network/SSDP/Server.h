@@ -21,12 +21,16 @@
 
 #include <Network/UdpConnection.h>
 #include "MessageQueue.h"
+#include <Data/CString.h>
 
-#define UPNP_VERSION_IS(ver) (F(MACROQUOT(ver)) == MACROQUOT(UPNP_VERSION))
+#define UPNP_VERSION_IS(ver) (F(MACROQUOTE(ver)) == MACROQUOTE(UPNP_VERSION))
 
 namespace SSDP
 {
-DECLARE_FSTR(SERVER_ID);
+DECLARE_FSTR(BASE_SERVER_ID)
+DECLARE_FSTR(defaultProductNameAndVersion);
+
+String getServerId(const String& productNameAndVersion);
 
 /**
  * @brief Callback type for handling an incoming message
@@ -98,6 +102,18 @@ public:
 	 */
 	bool buildMessage(Message& msg, MessageSpec& ms);
 
+	/**
+	 * @brief Set product name and version contained in SSDP message USER-AGENT field
+	 */
+	void setProduct(const String& name, const String& version)
+	{
+		String s;
+		s += name;
+		s += '/';
+		s += version;
+		productNameAndVersion = s;
+	}
+
 public:
 	MessageQueue messageQueue;
 
@@ -121,6 +137,7 @@ private:
 	SendDelegate sendDelegate{nullptr};
 	UdpOut out;
 	bool active{false};
+	CString productNameAndVersion;
 };
 
 extern Server server;

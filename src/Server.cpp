@@ -26,11 +26,19 @@
 
 namespace SSDP
 {
-#define PRODUCT_NAME "SSDP"
-#define PRODUCT_VERSION "1.0"
-DEFINE_FSTR(SERVER_ID, "Sming/" SMING_VERSION " UPnP/" MACROQUOT(UPNP_VERSION) " " PRODUCT_NAME " " PRODUCT_VERSION);
+DEFINE_FSTR(BASE_SERVER_ID, "Sming/" SMING_VERSION " UPnP/" MACROQUOTE(UPNP_VERSION));
+DEFINE_FSTR(defaultProductNameAndVersion, "SSDP/1.0")
 
 Server server;
+
+String getServerId(const String& productNameAndVersion)
+{
+	String s;
+	s += BASE_SERVER_ID;
+	s += ' ';
+	s += productNameAndVersion ?: SSDP::defaultProductNameAndVersion;
+	return s;
+}
 
 void Server::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
@@ -274,8 +282,8 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 	// Note: Don't add content-length as it's not in the spec.
 	//	msg[HTTP_HEADER_CONTENT_LENGTH] = "0";
 
-	if(UPNP_VERSION_IS("1.0")) {
-		msg[HTTP_HEADER_USER_AGENT] = SERVER_ID;
+	if(!UPNP_VERSION_IS("1.0")) {
+		msg[HTTP_HEADER_USER_AGENT] = getServerId(String(productNameAndVersion));
 
 		//	response["BOOTID.UPNP.ORG"] = bootId;
 		//	response["CONFIGID.UPNP.ORG"] = configId;
