@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
@@ -33,9 +33,23 @@ DEFINE_FSTR_VECTOR(msgtypeStrings, FlashString, SSDP_MESSAGE_TYPE_MAP(XX))
 
 namespace SSDP
 {
-DEFINE_FSTR(SSDP_MAN_DISCOVER, "\"ssdp:discover\"");
+DEFINE_FSTR(SSDP_DISCOVER, "\"ssdp:discover\"");
 DEFINE_FSTR(UPNP_ROOTDEVICE, "upnp:rootdevice");
 DEFINE_FSTR(SSDP_ALL, "ssdp:all");
+
+Message::Message(const BasicMessage& msg)
+{
+	clear();
+
+	type = msg.type;
+	remoteIP = msg.remoteIP;
+	remotePort = msg.remotePort;
+
+	for(unsigned i = 0; i < msg.count(); ++i) {
+		auto& header = msg[i];
+		operator[](header.name) = header.value;
+	}
+}
 
 HttpError BasicMessage::parse(char* data, size_t len)
 {
@@ -49,7 +63,7 @@ HttpError BasicMessage::parse(char* data, size_t len)
 		switch(BasicHttpHeaders::method()) {
 		case HttpMethod::MSEARCH: {
 			auto man = operator[]("MAN");
-			if(SSDP_MAN_DISCOVER != man) {
+			if(SSDP_DISCOVER != man) {
 				debug_e("[SSDP] MAN field wrong (%s)", man ?: "(null)");
 				err = HPE_INVALID_HEADER_TOKEN;
 				break;

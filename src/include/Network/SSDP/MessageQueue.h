@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
@@ -74,6 +74,12 @@ public:
 	 * See `MessageSpec` operator== definition for how comparison is performed.
 	 */
 	bool contains(const MessageSpec& ms) const;
+
+	/**
+	 * @brief Remove any messages for this object
+	 * @retval unsigned Number of messages removed
+	 */
+	unsigned remove(void* object);
 
 private:
 	void setTimer();

@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
@@ -21,10 +21,16 @@
 
 #include <Network/UdpConnection.h>
 #include "MessageQueue.h"
+#include <Data/CString.h>
+
+#define UPNP_VERSION_IS(ver) (F(MACROQUOTE(ver)) == MACROQUOTE(UPNP_VERSION))
 
 namespace SSDP
 {
-DECLARE_FSTR(SERVER_ID);
+DECLARE_FSTR(BASE_SERVER_ID)
+DECLARE_FSTR(defaultProductNameAndVersion);
+
+String getServerId(const String& productNameAndVersion);
 
 /**
  * @brief Callback type for handling an incoming message
@@ -56,6 +62,8 @@ using SendDelegate = Delegate<void(Message& msg, MessageSpec& ms)>;
 class Server : private UdpConnection
 {
 public:
+	static constexpr uint8_t multicastTtl{2};
+
 	Server() : messageQueue(MessageDelegate(&Server::onMessage, this))
 	{
 	}
@@ -94,6 +102,18 @@ public:
 	 */
 	bool buildMessage(Message& msg, MessageSpec& ms);
 
+	/**
+	 * @brief Set product name and version contained in SSDP message USER-AGENT field
+	 */
+	void setProduct(const String& name, const String& version)
+	{
+		String s;
+		s += name;
+		s += '/';
+		s += version;
+		productNameAndVersion = s;
+	}
+
 public:
 	MessageQueue messageQueue;
 
@@ -117,6 +137,7 @@ private:
 	SendDelegate sendDelegate{nullptr};
 	UdpOut out;
 	bool active{false};
+	CString productNameAndVersion;
 };
 
 extern Server server;

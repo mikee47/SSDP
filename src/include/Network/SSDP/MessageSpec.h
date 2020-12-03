@@ -16,7 +16,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
@@ -221,7 +221,7 @@ public:
 
 private:
 	void* m_object{nullptr}; ///< Defined by UPnP or application
-	ip4_addr_t m_remoteIp;   ///< Where to send message
+	IpAddress m_remoteIp{};  ///< Where to send message
 	union Data {
 		struct {
 			uint32_t remotePort : 16;   ///< Port to send message

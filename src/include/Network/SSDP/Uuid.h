@@ -1,5 +1,5 @@
 /**
- * UUID.h - Universal Unique Identifier
+ * Uuid.h - Universal Unique Identifier
  *
  * See https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm.
  *
@@ -14,7 +14,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
@@ -23,23 +23,60 @@
 
 #include <WString.h>
 
-struct UUID {
-	uint32_t time_low;				   // 0-3
-	uint16_t time_mid;				   // 4-5
-	uint16_t time_hi_and_version;	  // 6-7, version = top 4 bits
-	uint8_t clock_seq_hi_and_reserved; // 8, variant = top 2 bits
-	uint8_t clock_seq_low;			   // 9
-	uint8_t node[6];				   // 10-15
+struct Uuid {
+	uint32_t time_low{0};				  // 0-3
+	uint16_t time_mid{0};				  // 4-5
+	uint16_t time_hi_and_version{0};	  // 6-7, version = top 4 bits
+	uint8_t clock_seq_hi_and_reserved{0}; // 8, variant = top 2 bits
+	uint8_t clock_seq_low{0};			  // 9
+	uint8_t node[6]{};					  // 10-15
 
 	/**
 	 * @brief Number of characters in a UUID string (excluding NUL terminator)
 	 */
 	static constexpr size_t stringSize = 36;
 
+	Uuid()
+	{
+	}
+
+	explicit Uuid(const char* s)
+	{
+		decompose(s);
+	}
+
+	explicit Uuid(const char* s, size_t len)
+	{
+		decompose(s, len);
+	}
+
+	explicit Uuid(const String& s)
+	{
+		decompose(s.c_str(), s.length());
+	}
+
+	explicit operator bool()
+	{
+		Uuid Null{};
+		return memcmp(this, &Null, sizeof(Null)) != 0;
+	}
+
 	/**
 	 * @note System clock must be set or this will not produce correct results.
 	 */
 	bool generate();
+
+	bool decompose(const char* s, size_t len);
+
+	bool decompose(const char* s)
+	{
+		return s ? decompose(s, strlen(s)) : false;
+	}
+
+	bool decompose(const String& s)
+	{
+		return decompose(s.c_str(), s.length());
+	}
 
 	/**
 	 * @note Get string representation of UUID
@@ -63,7 +100,22 @@ struct UUID {
 	}
 };
 
-inline String toString(const UUID& uuid)
+inline String toString(const Uuid& uuid)
 {
 	return uuid.toString();
 }
+
+inline bool fromString(const char* s, Uuid& uuid)
+{
+	return uuid.decompose(s);
+}
+
+inline bool fromString(const String& s, Uuid& uuid)
+{
+	return uuid.decompose(s);
+}
+
+/**
+ * @deprecated Use `Uuid` instead.
+ */
+typedef Uuid UUID SMING_DEPRECATED;

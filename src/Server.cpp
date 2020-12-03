@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
@@ -26,9 +26,19 @@
 
 namespace SSDP
 {
-DEFINE_FSTR(SERVER_ID, "Sming/" SMING_VERSION " UPnP/1.0");
+DEFINE_FSTR(BASE_SERVER_ID, "Sming/" SMING_VERSION " UPnP/" MACROQUOTE(UPNP_VERSION));
+DEFINE_FSTR(defaultProductNameAndVersion, "SSDP/1.0")
 
 Server server;
+
+String getServerId(const String& productNameAndVersion)
+{
+	String s;
+	s += BASE_SERVER_ID;
+	s += ' ';
+	s += productNameAndVersion ?: SSDP::defaultProductNameAndVersion;
+	return s;
+}
 
 void Server::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
@@ -161,22 +171,33 @@ bool Server::sendMessage(const Message& msg)
 
 bool Server::begin(ReceiveDelegate onReceive, SendDelegate onSend)
 {
-	if(!onReceive || !onSend || active) {
+	if(active) {
+		debug_w("[SSDP] already started");
+		return false;
+	}
+
+	if(!onReceive || !onSend) {
+		debug_e("[SSDP] requires callbacks");
 		return false;
 	}
 
 	this->receiveDelegate = onReceive;
 	this->sendDelegate = onSend;
 
-	if(!joinMulticastGroup(SSDP_MULTICAST_IP)) {
+	auto localIp = WifiStation.getIP();
+
+	if(!joinMulticastGroup(localIp, multicastIp)) {
 		debug_w("[SSDP] joinMulticastGroup() failed");
 		return false;
 	}
 
-	if(!listen(SSDP_MULTICAST_PORT)) {
+	if(!listen(multicastPort)) {
 		debug_e("[SSDP] listen failed");
 		return false;
 	}
+
+	setMulticast(localIp);
+	setMulticastTtl(multicastTtl);
 
 	debug_i("[SSDP] Started");
 	active = true;
@@ -206,7 +227,7 @@ void Server::end()
 
 	close();
 
-	leaveMulticastGroup(SSDP_MULTICAST_IP);
+	leaveMulticastGroup(multicastIp);
 
 	active = false;
 }
@@ -214,11 +235,12 @@ void Server::end()
 bool Server::buildMessage(Message& msg, MessageSpec& ms)
 {
 	msg.type = ms.type();
+
 	if(msg.type == MessageType::msearch) {
-		msg["MAN"] = SSDP_MAN_DISCOVER;
-		msg["MX"] = "10";
-		msg.remoteIP = SSDP_MULTICAST_IP;
-		msg.remotePort = SSDP_MULTICAST_PORT;
+		msg["MAN"] = SSDP_DISCOVER;
+		msg["MX"] = "3";
+		msg.remoteIP = multicastIp;
+		msg.remotePort = multicastPort;
 
 		switch(ms.target()) {
 		case SearchTarget::root:
@@ -227,16 +249,11 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 		case SearchTarget::all:
 			msg["ST"] = SSDP_ALL;
 			break;
+		case SearchTarget::type:
+		case SearchTarget::uuid:
+			// This will be filled in by ControlPoint
+			break;
 		default:
-			/*
-			 * TODO: This is all Control Point stuff.
-			 *
-			 * When that's implemented we'll have ControlPoint objects
-			 * which will provide specific search target classes.
-			 *
-			 * For now though, we can issue general searches.
-			 *
-			 */
 			debug_e("[SSDP] Invalid M-SEARCH target");
 			return false;
 		}
@@ -261,15 +278,17 @@ bool Server::buildMessage(Message& msg, MessageSpec& ms)
 	if(msg.type != MessageType::response) {
 		msg[HTTP_HEADER_HOST] = msg.remoteIP.toString() + ':' + msg.remotePort;
 	}
-	//	msg[HTTP_HEADER_USER_AGENT] = SERVER_ID;
 
-	// Recommended as this isn't a chunked message
-	msg[HTTP_HEADER_CONTENT_LENGTH] = "0";
+	// Note: Don't add content-length as it's not in the spec.
+	//	msg[HTTP_HEADER_CONTENT_LENGTH] = "0";
 
-	// UPnP 2.0
-	//	response["BOOTID.UPNP.ORG"] = bootId;
-	//	response["CONFIGID.UPNP.ORG"] = configId;
-	//	response["SEARCHPORT.UPNP.ORG"] = ...
+	if(!UPNP_VERSION_IS("1.0")) {
+		msg[HTTP_HEADER_USER_AGENT] = getServerId(String(productNameAndVersion));
+
+		//	response["BOOTID.UPNP.ORG"] = bootId;
+		//	response["CONFIGID.UPNP.ORG"] = configId;
+		//	response["SEARCHPORT.UPNP.ORG"] = ...
+	}
 
 	// These fields only required for IPv6
 	//	response["01-NLS"] = bootId;

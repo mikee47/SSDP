@@ -1,5 +1,5 @@
 /**
- * UUID.cpp
+ * Uuid.cpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -12,17 +12,17 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
 
-#include "include/Network/SSDP/UUID.h"
-#include <string.h>
+#include "include/Network/SSDP/Uuid.h"
+#include <cstring>
 #include <Platform/Station.h>
 #include <SystemClock.h>
 
-bool UUID::generate()
+bool Uuid::generate()
 {
 	auto mac = WifiStation.getMacAddress();
 	uint8_t version = 1; // DCE version
@@ -45,7 +45,49 @@ bool UUID::generate()
 	return SystemClock.isSet();
 }
 
-size_t UUID::toString(char* buffer, size_t bufSize) const
+bool Uuid::decompose(const char* s, size_t len)
+{
+	if(len != stringSize) {
+		return false;
+	}
+
+	char* p;
+	time_low = strtoul(s, &p, 16);
+	if(*p != '-' || p - s != 8) {
+		return false;
+	}
+	s = ++p;
+
+	time_mid = strtoul(s, &p, 16);
+	if(*p != '-' || p - s != 4) {
+		return false;
+	}
+	s = ++p;
+
+	time_hi_and_version = strtoul(s, &p, 16);
+	if(*p != '-' || p - s != 4) {
+		return false;
+	}
+	s = ++p;
+
+	uint16_t x = strtoul(s, &p, 16);
+	if(*p != '-' || p - s != 4) {
+		return false;
+	}
+	clock_seq_hi_and_reserved = x >> 8;
+	clock_seq_low = x & 0xff;
+	s = ++p;
+
+	for(unsigned i = 0; i < sizeof(node); ++i) {
+		uint8_t c = unhex(*s++) << 4;
+		c |= unhex(*s++);
+		node[i] = c;
+	}
+
+	return true;
+}
+
+size_t Uuid::toString(char* buffer, size_t bufSize) const
 {
 	if(buffer == nullptr || bufSize < stringSize) {
 		return 0;
@@ -64,8 +106,8 @@ size_t UUID::toString(char* buffer, size_t bufSize) const
 	buffer[13] = '-';
 	set(14, time_hi_and_version, 4);
 	buffer[18] = '-';
-	set(19, clock_seq_hi_and_reserved, 1);
-	set(21, clock_seq_low, 1);
+	set(19, clock_seq_hi_and_reserved, 2);
+	set(21, clock_seq_low, 2);
 	buffer[23] = '-';
 
 	unsigned pos = 24;
@@ -77,7 +119,7 @@ size_t UUID::toString(char* buffer, size_t bufSize) const
 	return stringSize;
 }
 
-String UUID::toString() const
+String Uuid::toString() const
 {
 	String s;
 	if(s.setLength(stringSize)) {

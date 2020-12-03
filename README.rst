@@ -16,6 +16,18 @@ Configuration Variables
    -  1: Output details of all requests. Warning: This can produce a lot of output!
 
 
+.. envvar:: UPNP_VERSION
+
+   UPnP standard to follow.
+
+   -  1.0: (default)
+   -  1.1: Incomplete
+   -  2.0: Incomplete
+
+   Versions 1.1 and 2.0 require ``BOOTID.UPNP.ORG`` and ``CONFIGID.UPNP.ORG`` fields
+   which are not currently implemented.
+
+
 Key points from UPnP 2.0 specification
 --------------------------------------
 

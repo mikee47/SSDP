@@ -1,21 +1,21 @@
 /**
-	 * MessageQueue.cpp
-	 *
-	 * Copyright 2019 mikee47 <mike@sillyhouse.net>
-	 *
-	 * This file is part of the Sming SSDP Library
-	 *
-	 * This library is free software: you can redistribute it and/or modify it under the terms of the
-	 * GNU General Public License as published by the Free Software Foundation, version 3 or later.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU General Public License along with FlashString.
-	 * If not, see <https://www.gnu.org/licenses/>.
-	 *
-	 ****/
+ * MessageQueue.cpp
+ *
+ * Copyright 2019 mikee47 <mike@sillyhouse.net>
+ *
+ * This file is part of the Sming SSDP Library
+ *
+ * This library is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, version 3 or later.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this library.
+ * If not, see <https://www.gnu.org/licenses/>.
+ *
+ ****/
 
 #include "debug.h"
 #include "include/Network/SSDP/MessageQueue.h"
@@ -112,6 +112,7 @@ void MessageQueue::add(MessageSpec* ms, uint32_t intervalMs)
 void MessageQueue::setTimer()
 {
 	if(head == nullptr) {
+		timer.stop();
 		return;
 	}
 
@@ -137,6 +138,33 @@ bool MessageQueue::contains(const MessageSpec& ms) const
 	}
 
 	return false;
+}
+
+unsigned MessageQueue::remove(void* object)
+{
+	unsigned count{0};
+	MessageSpec* prev = nullptr;
+	auto p = head;
+	while(p != nullptr) {
+		auto next = p->next;
+		if(p->object<void>() == object) {
+			if(p == head) {
+				head = next;
+			} else {
+				prev->next = next;
+			}
+			delete p;
+			++count;
+		} else {
+			prev = p;
+		}
+		p = next;
+	}
+
+	if(count != 0) {
+		setTimer();
+	}
+	return count;
 }
 
 } // namespace SSDP

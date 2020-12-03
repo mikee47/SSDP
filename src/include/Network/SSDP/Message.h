@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
@@ -23,9 +23,6 @@
 #include <Network/Http/BasicHttpHeaders.h>
 #include <Network/Http/HttpHeaders.h>
 
-#define SSDP_MULTICAST_IP IpAddress(239, 255, 255, 250)
-static constexpr uint16_t SSDP_MULTICAST_PORT = 1900;
-
 #define SSDP_MESSAGE_TYPE_MAP(XX)                                                                                      \
 	XX(notify)                                                                                                         \
 	XX(msearch)                                                                                                        \
@@ -33,7 +30,10 @@ static constexpr uint16_t SSDP_MULTICAST_PORT = 1900;
 
 namespace SSDP
 {
-DECLARE_FSTR(SSDP_MAN_DISCOVER);
+static const IpAddress multicastIp(239, 255, 255, 250);
+static constexpr uint16_t multicastPort = 1900;
+
+DECLARE_FSTR(SSDP_DISCOVER);
 DECLARE_FSTR(UPNP_ROOTDEVICE);
 DECLARE_FSTR(SSDP_ALL);
 
@@ -70,6 +70,10 @@ public:
  */
 class Message : public BaseMessage<HttpHeaders>
 {
+public:
+	Message() = default;
+	Message(const Message&) = default;
+	Message(const BasicMessage& msg);
 };
 
 } // namespace SSDP
