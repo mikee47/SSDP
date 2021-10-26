@@ -1,4 +1,4 @@
-/**
+/****
  * Urn.h - Construction of device/service URNs
  *
  * Copyright 2020 mikee47 <mike@sillyhouse.net>

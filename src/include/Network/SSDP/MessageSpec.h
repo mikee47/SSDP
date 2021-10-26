@@ -1,4 +1,4 @@
-/**
+/****
  * MessageSpec.h - Template specification for constructing SSDP message packets
  *
  * Rather than manually constructing a message from scratch, the framework uses a template
