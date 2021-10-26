@@ -178,3 +178,9 @@ method or we could use a union with all the different Item types plus a separate
 That could also contain the search filter information as input.
 
 Move all this stuff into an `SsdpResponder` class?
+
+API Documentation
+-----------------
+
+.. doxygennamespace:: SSDP
+   :members:
