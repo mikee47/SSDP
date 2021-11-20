@@ -19,6 +19,7 @@
 
 #include "include/Network/SSDP/Message.h"
 #include <FlashString/Vector.hpp>
+#include <debug_progmem.h>
 
 namespace
 {

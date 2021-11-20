@@ -21,6 +21,8 @@
 #include <cstring>
 #include <Platform/Station.h>
 #include <SystemClock.h>
+#include <stringconversion.h>
+#include <esp_system.h>
 
 bool Uuid::generate()
 {
