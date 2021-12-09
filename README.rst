@@ -120,8 +120,8 @@ are backward compatible, which why perhaps we only see major numbers in interfac
 definitions. e.g. ``Basic:1`` not ``Basic:1.0``.
 
 
-Search reponse
-~~~~~~~~~~~~~~
+Search response
+~~~~~~~~~~~~~~~
 
 ::
 
