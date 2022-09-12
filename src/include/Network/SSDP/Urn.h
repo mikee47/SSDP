@@ -20,7 +20,7 @@
 #pragma once
 
 #include <WString.h>
-#include <Network/SSDP/Uuid.h>
+#include <Data/Uuid.h>
 
 #define UPNP_URN_KIND_MAP(XX)                                                                                          \
 	XX(none, "invalid")                                                                                                \
